@@ -4,6 +4,7 @@ from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base_entity import BaseEntity
+from sqlalchemy.orm import relationship
 
 
 class User(BaseEntity):
@@ -54,4 +55,8 @@ class User(BaseEntity):
         Boolean,
         default=True,
         nullable=False,
+    )
+    tenant_members = relationship(
+    "TenantMember",
+    back_populates="user",
     )

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base_entity import BaseEntity
 
@@ -34,4 +34,19 @@ class TenantMember(BaseEntity):
         PG_UUID(as_uuid=True),
         ForeignKey("roles.id"),
         nullable=False,
+    )
+
+    tenant = relationship(
+        "Tenant",
+        back_populates="members",
+    )
+
+    user = relationship(
+        "User",
+        back_populates="tenant_members",
+    )
+
+    role = relationship(
+        "Role",
+        back_populates="tenant_members",
     )

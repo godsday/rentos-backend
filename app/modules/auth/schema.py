@@ -42,19 +42,22 @@ class TokenPayload(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    role: str
+    tenant: TenantInfoResponse
 
 
 class CurrentUserResponse(BaseModel):
     id: UUID
     full_name: str
-    email: EmailStr
-    phone: str
-    profile_image: str | None
-    is_email_verified: bool
-    is_phone_verified: bool
-    is_active: bool
+    email: str
+    tenant_id: UUID
+    tenant_name: str
+    role: str
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
+class TenantInfoResponse(BaseModel):
+    id: UUID
+    name: str

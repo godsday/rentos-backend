@@ -2,6 +2,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base_entity import BaseEntity
+from sqlalchemy.orm import relationship
 
 
 class Tenant(BaseEntity):
@@ -28,3 +29,8 @@ class Tenant(BaseEntity):
         default=True,
         nullable=False,
     )
+    members = relationship(
+    "TenantMember",
+    back_populates="tenant",
+    cascade="all, delete-orphan",
+)

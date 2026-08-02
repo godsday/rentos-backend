@@ -27,14 +27,18 @@ def verify_password(
     )
 def create_access_token(
     subject: str,
+    tenant_id: str,
+    role: str,
 ) -> str:
     expire = datetime.now(UTC) + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
     payload = {
-        "sub": subject,
-        "exp": expire,
+    "sub": subject,
+    "tenant_id": tenant_id,
+    "role": role,
+    "exp": expire,
     }
 
     return jwt.encode(

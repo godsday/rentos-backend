@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 from app.db.base_entity import BaseEntity
+from sqlalchemy.orm import relationship
 
 
 class Role(BaseEntity):
@@ -19,4 +20,8 @@ class Role(BaseEntity):
     description: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
+    )
+    tenant_members = relationship(
+    "TenantMember",
+    back_populates="role",
     )

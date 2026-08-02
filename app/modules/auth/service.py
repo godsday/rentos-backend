@@ -112,11 +112,47 @@ class UserService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password.",
             )
+        tenant_member_repository = TenantMemberRepository(
+            self.repository.db,
+        )
+
+        membership = tenant_member_repository.get_by_user_id(
+            user.id,
+        )
+
+        if membership is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Tenant membership not found.",
+            )
+
+        tenant_repository = TenantRepository(
+            self.repository.db,
+        )
+
+        role_repository = RoleRepository(
+            self.repository.db,
+        )
+
+        tenant = tenant_repository.get_by_id(
+            membership.tenant_id,
+        )
+
+        role = role_repository.get_by_id(
+            membership.role_id,
+        )
 
         access_token = create_access_token(
             subject=str(user.id),
+            tenant_id=str(tenant.id),
+            role=role.name,
         )
 
         return TokenResponse(
             access_token=access_token,
+            role=role.name,
+            tenant={
+                "id": tenant.id,
+                "name": tenant.name,
+            },
         )
