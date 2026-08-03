@@ -30,5 +30,9 @@ def get_db():
 
     try:
         yield db
+        db.commit()        # Commit if everything succeeded
+    except Exception:
+        db.rollback()      # Rollback on any exception
+        raise
     finally:
         db.close()

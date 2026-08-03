@@ -24,7 +24,7 @@ router = APIRouter(
 
 @router.post(
     "",
-    response_model=CategoryResponse,
+    response_model=list[CategoryResponse],
 )
 def create_category(
     request: CreateCategoryRequest,
