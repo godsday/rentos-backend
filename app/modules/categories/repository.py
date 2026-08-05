@@ -17,13 +17,17 @@ class CategoryRepository(BaseRepository[Category]):
             .first()
         )
 
-    def get_all_by_tenant(self, tenant_id):
+    def get_all_by_tenant(self, tenant_id, page:int, limit: int):
+        offset = (page -1)* limit
         return (
+            
             self.db.query(Category)
             .filter(
                 Category.tenant_id == tenant_id,
                 Category.is_deleted.is_(False),
             )
             .order_by(Category.name)
+            .offset(offset)
+            .limit(limit)
             .all()
         )

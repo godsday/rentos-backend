@@ -60,8 +60,12 @@ class ItemRepository(BaseRepository[Item]):
 
     def get_all_by_tenant(
         self,
-        tenant_id: UUID,
+        tenant_id,
+        page: int,
+        limit: int,
+        
     ):
+        offset = (page - 1) * limit
         return (
             self.db.query(Item)
             .filter(
@@ -69,6 +73,8 @@ class ItemRepository(BaseRepository[Item]):
                 Item.is_deleted.is_(False),
             )
             .order_by(Item.name)
+            .offset(offset)
+            .limit(limit)
             .all()
         ) 
 

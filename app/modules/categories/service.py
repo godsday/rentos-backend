@@ -31,9 +31,11 @@ class CategoryService:
             )
         )
 
-    def get_all(self, tenant_id):
+    def get_all(self, tenant_id, page :int , limit :int):
         return self.repository.get_all_by_tenant(
             tenant_id,
+            page,
+            limit
         )
 
     def update(

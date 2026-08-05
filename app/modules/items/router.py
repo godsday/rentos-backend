@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user
@@ -44,6 +44,8 @@ def create_item(
     response_model=list[ItemResponse],
 )
 def get_items(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -53,6 +55,8 @@ def get_items(
 
     return service.get_all(
         current_user.tenant_id,
+        page,
+        limit
     )
 
 

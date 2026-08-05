@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends ,Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -50,7 +50,9 @@ def create_category(
     response_model=list[CategoryResponse],
 )
 def get_categories(
-    current_user: User = Depends(get_current_user),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
 
@@ -59,7 +61,9 @@ def get_categories(
     )
 
     return service.get_all(
-        current_user.tenant_id,
+       current_user.tenant_id,
+        page,
+        limit,
     )
 
 
