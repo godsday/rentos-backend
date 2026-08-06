@@ -64,7 +64,10 @@ class ItemRepository(BaseRepository[Item]):
         page: int,
         limit: int,
         search: str | None = None,
-        sort: str = "name"
+        sort: str = "name",
+        category_id=None,
+        is_active=None,
+        available_only=False,
 
         
     ):
@@ -79,6 +82,21 @@ class ItemRepository(BaseRepository[Item]):
         if search:
             query = query.filter(
                 Item.name.ilike(f"%{search}%")
+            )
+
+        if category_id:
+            query = query.filter(
+                Item.category_id == category_id,
+            )
+
+        if is_active is not None:
+            query = query.filter(
+                Item.is_active == is_active,
+            )
+
+        if available_only:
+            query = query.filter(
+                Item.available_quantity > 0,
             )
         sort_columns = {
             "name": Item.name,
@@ -113,4 +131,20 @@ class ItemRepository(BaseRepository[Item]):
                 Item.is_deleted.is_(False),
             )
             .first()
+        )
+    
+    def has_items(
+        self,
+        tenant_id,
+        category_id,
+    ):
+        return (
+            self.db.query(Item)
+            .filter(
+                Item.tenant_id == tenant_id,
+                Item.category_id == category_id,
+                Item.is_deleted.is_(False),
+            )
+            .first()
+            is not None
         )

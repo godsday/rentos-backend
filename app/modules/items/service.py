@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import HTTPException, status
 
 from app.modules.categories.repository import CategoryRepository
@@ -102,6 +103,9 @@ class ItemService:
         limit:int, 
         search=None,  
         sort= 'name',
+        category_id=None,
+        is_active: bool | None = None,
+        available_only: bool = False,
        
     ):
         return self.repository.get_all_by_tenant(
@@ -109,7 +113,10 @@ class ItemService:
             page,
             limit,
             search,
-            sort
+            sort,
+            category_id,
+            is_active,
+            available_only,
             
 
     )

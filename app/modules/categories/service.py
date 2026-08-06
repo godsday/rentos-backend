@@ -6,6 +6,8 @@ from app.modules.categories.schema import (
     CreateCategoryRequest,
     UpdateCategoryRequest,
 )
+from app.modules.items.repository import ItemRepository
+
 
 
 class CategoryService:
@@ -88,6 +90,21 @@ class CategoryService:
             raise HTTPException(
                 status_code=403,
                 detail="Access denied.",
+            )
+        item_repository = ItemRepository(
+            self.repository.db,
+        )
+
+        if item_repository.has_items(
+            tenant_id,
+            category.id,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "Cannot delete category. "
+                    "Items exist under this category."
+                ),
             )
 
         self.repository.soft_delete(category)

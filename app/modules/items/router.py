@@ -49,7 +49,10 @@ def get_items(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
     search: str | None = Query(None),
-    sort: str = Query("name")
+    sort: str = Query("name"),
+    category_id: UUID | None = Query(None),
+    is_active: bool | None = Query(None),
+    available_only: bool = Query(False)
 ):
     repository = ItemRepository(db)
 
@@ -60,7 +63,11 @@ def get_items(
         page,
         limit,
         search,
-        sort
+        sort,
+        category_id,
+        is_active,
+        available_only,
+        
     )
 
 
