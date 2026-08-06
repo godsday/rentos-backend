@@ -54,6 +54,7 @@ def get_categories(
     limit: int = Query(20, ge=1, le=100),
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
+    search: str | None = Query(None)
 ):
 
     service = CategoryService(
@@ -64,6 +65,7 @@ def get_categories(
        current_user.tenant_id,
         page,
         limit,
+        search
     )
 
 

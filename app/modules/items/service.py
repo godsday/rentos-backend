@@ -99,13 +99,15 @@ class ItemService:
         self,
         tenant_id,
         page:int,
-        limit:int,    
+        limit:int, 
+        search=None   
        
     ):
         return self.repository.get_all_by_tenant(
             tenant_id,
             page,
             limit,
+            search
             
 
     )

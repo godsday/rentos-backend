@@ -48,6 +48,7 @@ def get_items(
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    search: str | None = Query(None)
 ):
     repository = ItemRepository(db)
 
@@ -56,7 +57,8 @@ def get_items(
     return service.get_all(
         current_user.tenant_id,
         page,
-        limit
+        limit,
+        search
     )
 
 

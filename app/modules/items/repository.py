@@ -63,20 +63,30 @@ class ItemRepository(BaseRepository[Item]):
         tenant_id,
         page: int,
         limit: int,
+        search: str | None = None,
         
     ):
-        offset = (page - 1) * limit
-        return (
+        query = (
             self.db.query(Item)
             .filter(
                 Item.tenant_id == tenant_id,
                 Item.is_deleted.is_(False),
             )
-            .order_by(Item.name)
+        )
+
+        if search:
+            query = query.filter(
+                Item.name.ilike(f"%{search}%")
+            )
+
+        offset = (page - 1) * limit
+
+        return (
+            query.order_by(Item.name)
             .offset(offset)
             .limit(limit)
             .all()
-        ) 
+        )
 
     def get_by_sku(
         self,
