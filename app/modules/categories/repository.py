@@ -17,7 +17,16 @@ class CategoryRepository(BaseRepository[Category]):
             .first()
         )
 
-    def get_all_by_tenant(self, tenant_id, page:int, limit: int,search: str | None = None,):
+    def get_all_by_tenant(
+        self, 
+        tenant_id,
+        page:int, 
+        limit: int,
+        search: str | None = None,
+        sort: str = "name"
+
+
+     ):
         query = (
             self.db.query(Category)
             .filter(
@@ -31,10 +40,20 @@ class CategoryRepository(BaseRepository[Category]):
                 Category.name.ilike(f"%{search}%")
             )
 
+        sort_columns = {
+            "name": Category.name,
+            "created_at": Category.created_at,
+        }
+
+        query = query.order_by(
+            sort_columns.get(sort, Category.name)
+        )
+
         offset = (page - 1) * limit
 
         return (
-            query.order_by(Category.name)
+            query.order_by(
+                sort_columns.get(sort,Category.name))
             .offset(offset)
             .limit(limit)
             .all()

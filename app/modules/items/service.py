@@ -100,14 +100,16 @@ class ItemService:
         tenant_id,
         page:int,
         limit:int, 
-        search=None   
+        search=None,  
+        sort= 'name',
        
     ):
         return self.repository.get_all_by_tenant(
             tenant_id,
             page,
             limit,
-            search
+            search,
+            sort
             
 
     )

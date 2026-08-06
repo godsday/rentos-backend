@@ -64,6 +64,8 @@ class ItemRepository(BaseRepository[Item]):
         page: int,
         limit: int,
         search: str | None = None,
+        sort: str = "name"
+
         
     ):
         query = (
@@ -78,11 +80,21 @@ class ItemRepository(BaseRepository[Item]):
             query = query.filter(
                 Item.name.ilike(f"%{search}%")
             )
+        sort_columns = {
+            "name": Item.name,
+            "sku": Item.sku,
+            "rental_price": Item.rental_price,
+            "quantity": Item.quantity,
+            "created_at": Item.created_at,
+        }
+
+        
 
         offset = (page - 1) * limit
 
         return (
-            query.order_by(Item.name)
+            query.order_by(
+              sort_columns.get(sort,  Item.name))
             .offset(offset)
             .limit(limit)
             .all()
