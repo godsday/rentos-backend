@@ -4,3 +4,4 @@ from app.modules.tenants.models import Tenant
 from app.modules.tenant_members.models import TenantMember
 from app.modules.categories.models import Category
 from app.modules.items.models import Item
+from app.modules.customers.models import Customer
