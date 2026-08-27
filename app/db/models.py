@@ -6,3 +6,4 @@ from app.modules.categories.models import Category
 from app.modules.items.models import Item
 from app.modules.customers.models import Customer
 from app.modules.rentals.models import Rental
+from app.modules.rental_items.models import RentalItem

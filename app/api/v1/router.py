@@ -7,6 +7,9 @@ from app.modules.categories.router import router as category_router
 from app.modules.items.router import router as items_router
 from app.modules.customers.router import router as customers_router
 from app.modules.rentals.router import router as rentals_router
+from app.modules.rental_items.router import (
+    router as rental_items_router,
+)
 
 
 
@@ -17,3 +20,4 @@ api_router.include_router(category_router)
 api_router.include_router(items_router)
 api_router.include_router(customers_router)
 api_router.include_router(rentals_router)
+api_router.include_router(rental_items_router)

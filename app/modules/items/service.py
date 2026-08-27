@@ -56,6 +56,15 @@ class ItemService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Item name already exists.",
             )
+            # Check duplicate item name
+        if self.repository.get_by_name(
+            tenant_id,
+            request.name,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Item name already exists.",
+            )
 
    # Check duplicate SKU
         if self.repository.get_by_sku(
@@ -66,17 +75,7 @@ class ItemService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="SKU already exists.",
             )
-
-# Before creating an item, validate the SKU.
-        if self.repository.get_by_sku(
-            tenant_id,
-            request.sku,
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="SKU already exists.",
-            )
-            
+          
 
     # Create Item
         item = Item(
@@ -85,8 +84,8 @@ class ItemService:
             name=request.name,
             sku=request.sku,
             description=request.description,
+            purchase_price=request.purchase_price,
             rental_price=request.rental_price,
-            security_deposit=request.security_deposit,
             quantity=request.quantity,
             available_quantity=request.quantity,
             barcode=request.barcode,
@@ -197,21 +196,36 @@ class ItemService:
                 detail="SKU already exists.",
             )
 
+        
+    # Calculate currently rented quantity
+        currently_rented = (
+            item.quantity - item.available_quantity
+        )
+
+        # Prevent reducing stock below rented quantity
+        if request.quantity < currently_rented:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"Quantity cannot be less than currently "
+                    f"rented quantity ({currently_rented})."
+                ),
+            )
+
         # Update Item
+         # Update basic information
         item.category_id = request.category_id
         item.name = request.name
         item.sku = request.sku
         item.description = request.description
-        item.rental_price = request.rental_price
-        item.security_deposit = request.security_deposit
-
-        # Update Quantity
-        item.quantity = request.quantity
-        item.available_quantity = request.quantity
-
         item.barcode = request.barcode
         item.image = request.image
         item.is_active = request.is_active
+
+        # Update quantity
+        item.quantity = request.quantity
+        item.available_quantity = (
+            request.quantity - currently_rented)
 
         return self.repository.update(item)
 
@@ -237,6 +251,14 @@ class ItemService:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Access denied.",
             )
+        currently_rented = (
+            item.quantity - item.available_quantity
+        )
+        if currently_rented > 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Item is currently in use and cannot be deleted.",
+        )
 
         # Soft Delete
         self.repository.soft_delete(

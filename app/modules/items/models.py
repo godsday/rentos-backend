@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import (
@@ -5,15 +6,13 @@ from sqlalchemy import (
     ForeignKey,
     Numeric,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base_entity import BaseEntity
-from sqlalchemy import (
-    ForeignKey,
-    UniqueConstraint,
-)
+
 
 
 class Item(BaseEntity):
@@ -56,15 +55,13 @@ class Item(BaseEntity):
         nullable=True,
     )
 
-    rental_price: Mapped[float] = mapped_column(
+    rental_price: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),
         nullable=False,
     )
-
-    security_deposit: Mapped[float] = mapped_column(
-        Numeric(10, 2),
-        nullable=False,
-        default=0,
+    purchase_price: Mapped[Decimal] = mapped_column(
+        Numeric(10,2),
+        nullable=False
     )
 
     quantity: Mapped[int] = mapped_column(
@@ -90,6 +87,11 @@ class Item(BaseEntity):
         default=True,
     )
     __table_args__ = (
+    UniqueConstraint(
+        "tenant_id",
+        "name",
+        name="uq_item_tenant_name",
+    ),
     UniqueConstraint(
         "tenant_id",
         "sku",

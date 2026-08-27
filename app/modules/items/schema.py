@@ -2,6 +2,7 @@ from decimal import Decimal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CreateItemRequest(BaseModel):
@@ -10,12 +11,14 @@ class CreateItemRequest(BaseModel):
     """
 
     category_id: UUID
-    name: str
-    sku: str
+    name: str = Field(min_length=1, max_length=150)
+    sku: str = Field(min_length=1, max_length=100)
     description: str | None = None
-    rental_price: Decimal
-    security_deposit: Decimal = Decimal("0")
-    quantity: int
+
+    rental_price: Decimal = Field(gt=0)
+    purchase_price: Decimal = Field(ge=0)
+
+    quantity: int = Field(gt=0)
     barcode: str | None = None
     image: str | None = None
 
@@ -26,14 +29,13 @@ class UpdateItemRequest(BaseModel):
     """
 
     category_id: UUID
-    name: str
     sku: str
+    name : str
     description: str | None = None
-    rental_price: Decimal
-    security_deposit: Decimal
-    quantity: int
+    quantity: int = Field(gt=0)
     barcode: str | None = None
     image: str | None = None
+    purchase_price : Decimal = Field(ge=0)
     is_active: bool
 
 
@@ -48,7 +50,7 @@ class ItemResponse(BaseModel):
     sku: str
     description: str | None
     rental_price: Decimal
-    security_deposit: Decimal
+    purchase_price : Decimal
     quantity: int
     available_quantity: int
     barcode: str | None

@@ -27,20 +27,6 @@ class ItemRepository(BaseRepository[Item]):
             .first()
         )
 
-    def get_by_sku(
-        self,
-        tenant_id: UUID,
-        sku: str,
-    ):
-        return (
-            self.db.query(Item)
-            .filter(
-                Item.tenant_id == tenant_id,
-                Item.sku == sku,
-                Item.is_deleted.is_(False),
-            )
-            .first()
-        )
 
     def get_by_category(
         self,
@@ -102,6 +88,7 @@ class ItemRepository(BaseRepository[Item]):
             "name": Item.name,
             "sku": Item.sku,
             "rental_price": Item.rental_price,
+            "purchase_price": Item.purchase_price,
             "quantity": Item.quantity,
             "created_at": Item.created_at,
         }

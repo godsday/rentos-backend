@@ -5,6 +5,7 @@ from app.modules.rentals.models import Rental
 
 
 class RentalRepository(BaseRepository[Rental]):
+
     def __init__(self, db):
         super().__init__(db, Rental)
 
@@ -14,10 +15,6 @@ class RentalRepository(BaseRepository[Rental]):
         page: int,
         limit: int,
     ):
-        """
-        Return paginated rentals belonging to the tenant.
-        """
-
         offset = (page - 1) * limit
 
         return (
@@ -32,15 +29,27 @@ class RentalRepository(BaseRepository[Rental]):
             .all()
         )
 
-    def get_by_id_and_tenant(
+    def get_by_customer(
         self,
-        rental_id: UUID,
         tenant_id: UUID,
+        customer_id: UUID,
     ):
-        """
-        Get a rental only if it belongs to the tenant.
-        """
+        return (
+            self.db.query(Rental)
+            .filter(
+                Rental.tenant_id == tenant_id,
+                Rental.customer_id == customer_id,
+                Rental.is_deleted.is_(False),
+            )
+            .order_by(Rental.created_at.desc())
+            .all()
+        )
 
+    def get_by_id(
+        self,
+        tenant_id: UUID,
+        rental_id: UUID,
+    ):
         return (
             self.db.query(Rental)
             .filter(

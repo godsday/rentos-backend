@@ -14,7 +14,6 @@ from app.modules.rentals.schema import (
 )
 from app.modules.rentals.service import RentalService
 
-
 router = APIRouter(
     prefix="/rentals",
     tags=["Rentals"],
@@ -23,18 +22,10 @@ router = APIRouter(
 
 def get_rental_service(
     db: Session = Depends(get_db),
-):
-    """
-    Create RentalService with its repositories.
-    """
-
-    rental_repository = RentalRepository(db)
-
-    customer_repository = CustomerRepository(db)
-
+) -> RentalService:
     return RentalService(
-        rental_repository,
-        customer_repository,
+        repository=RentalRepository(db),
+        customer_repository=CustomerRepository(db),
     )
 
 
@@ -48,10 +39,6 @@ def create_rental(
     current_user=Depends(get_current_user),
     service: RentalService = Depends(get_rental_service),
 ):
-    """
-    Create a new rental.
-    """
-
     return service.create(
         current_user.tenant_id,
         request,
@@ -63,22 +50,11 @@ def create_rental(
     response_model=list[RentalResponse],
 )
 def get_rentals(
-    page: int = Query(
-        default=1,
-        ge=1,
-    ),
-    limit: int = Query(
-        default=20,
-        ge=1,
-        le=100,
-    ),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
     current_user=Depends(get_current_user),
     service: RentalService = Depends(get_rental_service),
 ):
-    """
-    Get paginated rentals for the current tenant.
-    """
-
     return service.get_all(
         current_user.tenant_id,
         page,
@@ -95,13 +71,24 @@ def get_rental(
     current_user=Depends(get_current_user),
     service: RentalService = Depends(get_rental_service),
 ):
-    """
-    Get a single rental.
-    """
-
     return service.get_by_id(
         current_user.tenant_id,
         rental_id,
+    )
+
+
+@router.get(
+    "/customer/{customer_id}",
+    response_model=list[RentalResponse],
+)
+def get_customer_rentals(
+    customer_id: UUID,
+    current_user=Depends(get_current_user),
+    service: RentalService = Depends(get_rental_service),
+):
+    return service.get_by_customer(
+        current_user.tenant_id,
+        customer_id,
     )
 
 
@@ -115,10 +102,6 @@ def update_rental(
     current_user=Depends(get_current_user),
     service: RentalService = Depends(get_rental_service),
 ):
-    """
-    Update a rental.
-    """
-
     return service.update(
         current_user.tenant_id,
         rental_id,
@@ -134,10 +117,6 @@ def delete_rental(
     current_user=Depends(get_current_user),
     service: RentalService = Depends(get_rental_service),
 ):
-    """
-    Soft delete a rental.
-    """
-
     return service.delete(
         current_user.tenant_id,
         rental_id,
