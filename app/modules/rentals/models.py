@@ -3,7 +3,7 @@ import enum
 import uuid
 
 from sqlalchemy import Date, Enum, ForeignKey, Numeric, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base_entity import BaseEntity
 
@@ -75,4 +75,10 @@ class Rental(BaseEntity):
     notes: Mapped[str | None] = mapped_column(
         String(500),
         nullable=True,
+    )
+
+    items = relationship(
+        "RentalItem",
+        back_populates="rental",
+        cascade="all, delete-orphan",
     )

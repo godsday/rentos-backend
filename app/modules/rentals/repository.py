@@ -45,11 +45,11 @@ class RentalRepository(BaseRepository[Rental]):
             .all()
         )
 
-    def get_by_id(
+    def get_by_id_and_tenant(
         self,
         tenant_id: UUID,
         rental_id: UUID,
-    ):
+    ) -> Rental | None:
         return (
             self.db.query(Rental)
             .filter(

@@ -6,8 +6,11 @@ from sqlalchemy.orm import Session
 from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.modules.customers.repository import CustomerRepository
+from app.modules.items.repository import ItemRepository
+from app.modules.rental_items.repository import RentalItemRepository
 from app.modules.rentals.repository import RentalRepository
 from app.modules.rentals.schema import (
+    ActivateRentalRequest,
     CreateRentalRequest,
     RentalResponse,
     UpdateRentalRequest,
@@ -26,6 +29,8 @@ def get_rental_service(
     return RentalService(
         repository=RentalRepository(db),
         customer_repository=CustomerRepository(db),
+        rental_item_repository=RentalItemRepository(db),
+        item_repository=ItemRepository(db),
     )
 
 
@@ -120,4 +125,21 @@ def delete_rental(
     return service.delete(
         current_user.tenant_id,
         rental_id,
+    )
+
+
+@router.post(
+    "/{rental_id}/activate",
+    response_model=RentalResponse,
+)
+def activate_rental(
+    rental_id: UUID,
+    request: ActivateRentalRequest,
+    current_user=Depends(get_current_user),
+    service: RentalService = Depends(get_rental_service),
+):
+    return service.activate(
+        current_user.tenant_id,
+        rental_id,
+        request,
     )

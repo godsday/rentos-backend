@@ -2,7 +2,7 @@ import uuid
 from decimal import Decimal
 
 from sqlalchemy import ForeignKey, Numeric
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base_entity import BaseEntity
 
@@ -38,4 +38,9 @@ class RentalItem(BaseEntity):
         Numeric(10, 2),
         nullable=False,
         default=Decimal("0.00"),
+    )
+
+    rental = relationship(
+        "Rental",
+        back_populates="items",
     )

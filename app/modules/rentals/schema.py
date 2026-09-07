@@ -46,6 +46,7 @@ class RentalResponse(BaseModel):
 
     total_amount: Decimal
     initial_payment: Decimal
+    remaining_amount: Decimal
 
     notes: str | None
 

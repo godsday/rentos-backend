@@ -12,6 +12,10 @@ class CreateRentalItemRequest(BaseModel):
     )
 
 
+class UpdateRentalItemRequest(BaseModel):
+    quantity: int = Field(gt=0)
+
+
 class RentalItemResponse(BaseModel):
     id: uuid.UUID
     rental_id: uuid.UUID
